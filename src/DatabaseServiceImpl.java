@@ -1,10 +1,6 @@
 import java.io.*;
-import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Scanner;
 
 public class DatabaseServiceImpl implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -13,8 +9,8 @@ public class DatabaseServiceImpl implements Serializable {
     private static final String DB_USER = "c3358";
     private static final String DB_PASS = "c3358PASS";
     private static final String DB_NAME = "c3358";
-    private static final String ONLINE_USERS = "OnlineUsers";
-    private static final String USER_INFO = "UserInfo";
+    public static final String ONLINE_USERS = "OnlineUsers";
+    public static final String USER_INFO = "UserInfo";
     public DatabaseServiceImpl() {
         try {
             // Load the MySQL JDBC driver
@@ -71,6 +67,7 @@ public class DatabaseServiceImpl implements Serializable {
             String sql = "DELETE FROM " + ONLINE_USERS;
             int rowsAffected = stmt.executeUpdate(sql);
             System.out.println("Cleared " + rowsAffected + " rows from " + ONLINE_USERS + " table.");
+            this.list(ONLINE_USERS);
             stmt.close(); // Close the statement after use
         } catch (SQLException e) {
             System.err.println("Error clearing online users: " + e.getMessage());
@@ -83,6 +80,7 @@ public class DatabaseServiceImpl implements Serializable {
             stmt.setString(1, username);
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Logged in username " + username + ". Rows affected: " + rowsAffected);
+            this.list(ONLINE_USERS);
             stmt.close();
         } catch (SQLException | IllegalArgumentException e) {
             System.err.println("Error inserting record: " + e);
@@ -95,6 +93,7 @@ public class DatabaseServiceImpl implements Serializable {
             stmt.setString(1, username);
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Logged out user: " + username + ". Rows affected: " + rowsAffected);
+            this.list(ONLINE_USERS);
             stmt.close();
         } catch (SQLException | IllegalArgumentException e) {
             System.err.println("Error inserting record: " + e);
@@ -181,6 +180,7 @@ public class DatabaseServiceImpl implements Serializable {
                             // Insert user into UserInfo table
                             int rowsAffected = insertStmt.executeUpdate();
                             System.out.println("User '" + username + "' has been added to UserInfo. Rows affected: " + rowsAffected);
+                            this.list(USER_INFO);
                             this.updateRanks();
                             // Log in the user
                             loginUser(username);
@@ -204,9 +204,34 @@ public class DatabaseServiceImpl implements Serializable {
             try (PreparedStatement stmt = conn.prepareStatement(updateSql)) {
                 int rowsAffected = stmt.executeUpdate();
                 System.out.println("Ranks updated for " + rowsAffected + " users.");
+                this.list(USER_INFO);
             }
         } catch (SQLException e) {
             System.err.println("Error updating ranks: " + e.getMessage());
+        }
+    }
+    private void list(String table) {
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM " + table);
+            ResultSetMetaData metaData = rs.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            // Print column names
+            for (int i = 1; i <= columnCount; i++) {
+                System.out.print(metaData.getColumnName(i) + "\t");
+            }
+            System.out.println();
+            // Print rows
+            while (rs.next()) {
+                for (int i = 1; i <= columnCount; i++) {
+                    System.out.print(rs.getString(i) + "\t");
+                }
+                System.out.println();
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            System.err.println("Error listing records: " + e);
         }
     }
 }
