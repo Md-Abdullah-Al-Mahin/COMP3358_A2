@@ -50,7 +50,7 @@ public class JDBCDemo {
 	}
 	private void insert(String name, String birthday) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("INSERT INTO c3358_2017_t4 (name, birthday) VALUES (?, ?)");
+			PreparedStatement stmt = conn.prepareStatement("INSERT INTO c3358_2024 (name, birthday) VALUES (?, ?)");
 			stmt.setString(1, name);
 			stmt.setDate(2, java.sql.Date.valueOf(birthday));
 			stmt.execute();
@@ -61,7 +61,7 @@ public class JDBCDemo {
 	}
 	private void read(String name) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("SELECT birthday FROM c3358_2017_t4 WHERE name = ?");
+			PreparedStatement stmt = conn.prepareStatement("SELECT birthday FROM c3358_2024 WHERE name = ?");
 			stmt.setString(1, name);
 			ResultSet rs = stmt.executeQuery();
 			if(rs.next()) {
@@ -76,7 +76,7 @@ public class JDBCDemo {
 	private void list() {
 		try {
 			Statement stmt = conn.createStatement();
-			ResultSet rs = stmt.executeQuery("SELECT name, birthday FROM c3358_2017_t4");
+			ResultSet rs = stmt.executeQuery("SELECT name, birthday FROM c3358_2024");
 			while(rs.next()) {
 				System.out.println("Birthday of "+rs.getString(1)+" is on "+rs.getDate(2).toString());
 			}
@@ -86,7 +86,7 @@ public class JDBCDemo {
 	}
 	private void update(String name, String birthday) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("UPDATE c3358_2017_t4 SET birthday = ? WHERE name = ?");
+			PreparedStatement stmt = conn.prepareStatement("UPDATE c3358_2024 SET birthday = ? WHERE name = ?");
 			stmt.setDate(1, java.sql.Date.valueOf(birthday));
 			stmt.setString(2, name);
 
@@ -103,7 +103,7 @@ public class JDBCDemo {
 	}
 	private void delete(String name) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("DELETE FROM c3358_2017_t4 WHERE name = ?");
+			PreparedStatement stmt = conn.prepareStatement("DELETE FROM c3358_2024 WHERE name = ?");
 			stmt.setString(1, name);
 			int rows = stmt.executeUpdate();
 			if(rows > 0) {
@@ -117,7 +117,7 @@ public class JDBCDemo {
 	}
 	private void find(String birthday) {
 		try {
-			PreparedStatement stmt = conn.prepareStatement("SELECT name FROM c3358_2017_t4 WHERE birthday = ?");
+			PreparedStatement stmt = conn.prepareStatement("SELECT name FROM c3358_2024 WHERE birthday = ?");
 			stmt.setDate(1, java.sql.Date.valueOf(birthday));
 			ResultSet rs = stmt.executeQuery();
 			System.out.println("Records with birthday on " + birthday + ":");
